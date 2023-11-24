@@ -61,13 +61,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.keepnotes.ui.theme.Purple40
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun Portada(navController: NavController) {
     Scaffold(
+        floatingActionButton = { MyFAB() },
         containerColor = Color.Black,
         topBar = { MyTopBar() },
         content = {
@@ -136,7 +136,6 @@ fun Comentarios() {
                             modifier = Modifier.padding(6.dp)
                         )
                     }
-
                 }
             }
         }
@@ -157,6 +156,30 @@ fun MyTopBar() {
         )
         TopAppBar(
             actions = {
+                val value by rememberInfiniteTransition().animateFloat(
+                    initialValue = 25f,
+                    targetValue = -25f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(
+                            durationMillis = 600,
+                            easing = LinearEasing
+                        ),
+                        repeatMode = RepeatMode.Reverse
+                    )
+                )
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "campana",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .graphicsLayer(
+                            transformOrigin = TransformOrigin(
+                                pivotFractionX = 0.5f,
+                                pivotFractionY = 0.0f,
+                            ),
+                            rotationZ = value
+                        )
+                )
                 IconButton(
                     onClick = {
                     }
@@ -172,6 +195,7 @@ fun MyTopBar() {
                 Text(text = "KeepNotes", color = Color.White, fontSize = 20.sp)
             },
             navigationIcon = {
+
                 IconButton(
                     onClick = {
                     }
@@ -181,10 +205,60 @@ fun MyTopBar() {
                         contentDescription = null,
                         tint = Color.White
                     )
+
                 }
             },
             colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color.Transparent)
         )
     }
+}
 
+@Composable
+fun MyFAB() {
+    val value by rememberInfiniteTransition().animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 1000,
+                easing = LinearEasing
+            )
+        )
+    )
+    val colors = listOf(
+        Color(0xFF405DE6),
+        Color(0xFFC13584),
+        Color(0xFFFD1D1D),
+        Color(0xFFFFDC80)
+    )
+    var gradientBrush by remember {
+        mutableStateOf(
+            Brush.horizontalGradient(
+                colors = colors,
+                startX = -10.0f,
+                endX = 400.0f,
+                tileMode = TileMode.Repeated
+            )
+        )
+    }
+    Box(modifier = Modifier
+        .drawBehind {
+            rotate(value) {
+                drawCircle(
+                    gradientBrush, style = Stroke(width = 20.dp.value)
+                )
+            }
+        }
+        .size(70.dp)
+    ) {
+        FloatingActionButton(
+            onClick = { /*TODO*/ },
+            containerColor = Purple40,
+            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+            modifier = Modifier.size(70.dp),
+            shape = CircleShape
+        ) {
+            Icon(modifier = Modifier.size(30.dp),imageVector = Icons.Default.Create, contentDescription = "null", tint = Color.White)
+        }
+    }
 }
